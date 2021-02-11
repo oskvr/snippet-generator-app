@@ -1,5 +1,8 @@
 import Head from "next/head";
+import { parse } from "postcss";
 import { useEffect, useRef, useState } from "react";
+import CopyButton from "../components/CopyButton.js";
+import TextInput from "../components/TextInput.js";
 
 export default function Home() {
   const [tabTrigger, setTabTrigger] = useState("");
@@ -7,8 +10,7 @@ export default function Home() {
   const [body, setBody] = useState("");
   const [generatedCode, setGeneratedCode] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-  const [tabIndex, setTabIndex] = useState(1);
-  const bodyArray = body.split("\n").map((line) => `"${line}", \n`);
+  const bodyArray = body.split("\n").map((line) => line);
   useEffect(() => {
     setGeneratedCode(
       `"${description}": {
@@ -16,10 +18,16 @@ export default function Home() {
         "body": [  
           ${bodyArray
             .map((line, index) => {
+              const unescapedQuotes = /(?<!\\)"/g; // Matches any double quote without a preceding escape character. Matches ->"hi"<- NOT -> \"
+              const literalBackslashes = /\\(?!")+/g; // Matches all literal backslashes (i.e any not used for escaping other characters)
+              let parsedLine = line
+                .replaceAll(unescapedQuotes, '\\"')
+                .replaceAll(literalBackslashes, "\\\\\\\\"); // JSON requires at least 4 backslashes for every single backslash, so to output 2 we need 8 backslashes... Disgusting.
+              parsedLine = `"${parsedLine}",\n`;
               if (index === 0) {
-                return line;
+                return parsedLine;
               } else {
-                return " ".repeat(10) + line;
+                return " ".repeat(10) + parsedLine;
               }
             })
             .join("")}
@@ -27,67 +35,58 @@ export default function Home() {
         "description": "${description}"
       }`
     );
+  }, [tabTrigger, description, body, bodyArray]);
+  useEffect(() => {
     setIsCopied(false);
-    console.log(isCopied);
   }, [tabTrigger, description, body]);
-  function copyToClipboard() {
-    navigator.clipboard.writeText(generatedCode);
-    setIsCopied(true);
-  }
+
   return (
     <div className="container mx-auto ">
       <Head>
         <title>Snippet Generator App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-wrap gap-5">
-        <section>
-          <div className="bg-gray-500 p-2 space-x-5">
-            <input
-              type="text"
-              value={description}
+      <main className="grid grid-cols-1 md:grid-cols-auto-300 gap-10">
+        <section class="h-80vh shadow-lg">
+          <div className="bg-blue-500 rounded-t-lg p-2 space-x-5">
+            <TextInput
               onChange={(e) => setDescription(e.target.value)}
-              className="border p-4"
               placeholder="Description"
             />
-            <input
-              type="text"
-              value={tabTrigger}
+            <TextInput
               onChange={(e) => setTabTrigger(e.target.value)}
-              className="border p-4"
               placeholder="Tab trigger"
             />
           </div>
           <textarea
-            className="flex-1 border-2 bg-blue-50 p-2 h-4/6"
-            value={body}
-            rows="50"
-            cols="70"
+            className="bg-blue-50 p-2 w-full h-full focus:outline-none border"
+            rows="40"
+            cols="50"
             onChange={(e) => setBody(e.target.value)}
             onKeyDown={handleKeyDown}
+            placeholder="Write your code here"
+            style={{ resize: "none" }}
           ></textarea>
         </section>
-        <section>
-          <header className="p-5 bg-gray-500">
+        <section class="h-80vh shadow-lg">
+          <header className="p-5 bg-blue-500 rounded-t-lg">
             <h3 className="text-white text-2xl text-center">Output:</h3>
           </header>
-          <div className="relative group">
-            <div className="absolute top-0 left-0 w-full h-full bg-green-200 bg-opacity-0 group-hover:bg-opacity-20 grid place-items-center transition">
-              <button
-                onClick={copyToClipboard}
-                className="relative bg-blue-400 w-32 hover:bg-blue-500 text-white p-3 opacity-0 group-hover:opacity-100 transition"
-              >
-                {isCopied ? "Copied" : "Copy snippet"}
-              </button>
-            </div>
-            <div className="bg-blue-50 border p-2">
-              <pre>{generatedCode}</pre>
-            </div>
+          <div className="relative group h-full w-full overflow-auto whitespace-pre-wrap">
+            <CopyButton
+              isCopied={isCopied}
+              setIsCopied={setIsCopied}
+              textToCopy={generatedCode}
+            />
+            <pre className="bg-blue-50 whitespace-pre-wrap h-full w-full border">
+              {generatedCode}
+            </pre>
           </div>
         </section>
       </main>
     </div>
   );
+
   function handleKeyDown(e) {
     if (e.ctrlKey && e.key === "i") {
       const selectionStart = e.target.selectionStart;

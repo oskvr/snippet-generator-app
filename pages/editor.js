@@ -47,7 +47,7 @@ export default function Editor() {
       </Head>
       <main className="p-5">
         <h1 class="text-5xl font-medium p-5">Shitty Markdown Editor</h1>
-        <div className="grid grid-cols-auto-fit gap-4">
+        <div className="grid grid-cols-auto-300 gap-4">
           <section className="h-80vh">
             <textarea
               name=""
@@ -60,11 +60,11 @@ export default function Editor() {
             <article
               name=""
               id=""
-              className="border-2 w-full h-full overflow-auto break-words"
+              className="border-2 w-full h-full overflow-auto break-words bg-white"
             >
               {words.map((word) => {
-                const temp = parse(word);
-                return <span className={temp.class}>{temp.word} </span>;
+                const parsed = parse(word);
+                return <span className={parsed.class}>{parsed.word} </span>;
               })}
             </article>
           </section>

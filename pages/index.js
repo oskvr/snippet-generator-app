@@ -47,8 +47,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="grid grid-cols-1 md:grid-cols-auto-300 gap-10">
-        <section class="h-80vh shadow-lg">
-          <div className="bg-blue-500 rounded-t-lg p-2 space-x-5">
+        <section class="h-80vh shadow-md">
+          <div className="dark:bg-primary-dark-600 bg-primary-500 rounded-t-lg p-2 space-x-5">
             <TextInput
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Description"
@@ -59,29 +59,31 @@ export default function Home() {
             />
           </div>
           <textarea
-            className="bg-blue-50 p-2 w-full h-full focus:outline-none border"
+            className="dark:bg-gray-800 dark:text-gray-300 p-3 w-full h-full focus:outline-none border dark:border-gray-800"
             rows="40"
             cols="50"
             onChange={(e) => setBody(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Write your code here"
+            placeholder="Paste your code here..."
             style={{ resize: "none" }}
           ></textarea>
         </section>
-        <section class="h-80vh shadow-lg">
-          <header className="p-5 bg-blue-500 rounded-t-lg">
-            <h3 className="text-white text-2xl text-center">Output:</h3>
+        <section class="h-80vh shadow-md relative">
+          <header className="p-5 dark:bg-primary-dark-600 bg-primary-500 rounded-t-lg">
+            <h3 className="text-white dark:text-gray-300 text-2xl text-center">
+              Output:
+            </h3>
           </header>
-          <div className="relative group h-full w-full overflow-auto whitespace-pre-wrap">
-            <CopyButton
-              isCopied={isCopied}
-              setIsCopied={setIsCopied}
-              textToCopy={generatedCode}
-            />
-            <pre className="bg-blue-50 whitespace-pre-wrap h-full w-full border">
+          <div className="relative dark:bg-gray-800 dark:text-gray-300 bg-white  group h-full w-full overflow-auto whitespace-pre-wrap">
+            <pre className=" whitespace-pre-wrap h-full w-full border dark:border-gray-800 p-3">
               {generatedCode}
             </pre>
           </div>
+          <CopyButton
+            isCopied={isCopied}
+            setIsCopied={setIsCopied}
+            textToCopy={generatedCode}
+          />
         </section>
       </main>
     </div>

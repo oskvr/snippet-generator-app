@@ -62,6 +62,7 @@ export default function Home() {
             className="dark:bg-gray-800 dark:text-gray-300 p-3 w-full h-full focus:outline-none border dark:border-gray-800"
             rows="40"
             cols="50"
+            value={body}
             onChange={(e) => setBody(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Paste your code here..."

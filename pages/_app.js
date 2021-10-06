@@ -36,15 +36,15 @@ function MyApp({ Component, pageProps }) {
           </svg>
         )}
       </button>
-      <div className="min-h-screen bg-primary-50 dark:bg-gray-900">
-        <header className="space-x-5 dark:text-gray-200 p-2">
+      <div className="min-h-screen bg-primary-100 pt-10 dark:bg-gray-900 transition-bg duration-200">
+        {/* <header className="space-x-5 dark:text-gray-200 p-2">
           <Link href="/">
             <a>Snippet Generator</a>
           </Link>
           <Link href="/editor">
             <a>Markdown</a>
           </Link>
-        </header>
+        </header> */}
         <Component {...pageProps} />
       </div>
     </body>
